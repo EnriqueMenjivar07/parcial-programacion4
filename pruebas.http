@@ -1,0 +1,139 @@
+### =========================================================
+### Pruebas de la API (cliente HTTP de IntelliJ o VS Code REST Client)
+### Ejecuta cada bloque con el ▶ verde que aparece a la izquierda.
+### =========================================================
+
+@api = http://localhost:8080/api
+
+### ---------- CLIENTES (CRUD) ----------
+GET {{api}}/clientes
+
+###
+POST {{api}}/clientes
+Content-Type: application/json
+
+{ "nombre": "Roberto Díaz", "correo": "roberto@correo.com", "telefono": "7999-0000" }
+
+###
+PUT {{api}}/clientes/4
+Content-Type: application/json
+
+{ "nombre": "Roberto Díaz Actualizado", "correo": "roberto@correo.com", "telefono": "7999-1111" }
+
+###
+DELETE {{api}}/clientes/4
+
+### Validación: correo inválido y nombre vacío -> 400
+POST {{api}}/clientes
+Content-Type: application/json
+
+{ "nombre": "", "correo": "no-es-correo", "telefono": "7000-0000" }
+
+### ---------- PRODUCTOS ----------
+GET {{api}}/productos
+
+###
+POST {{api}}/productos
+Content-Type: application/json
+
+{ "nombre": "Frijoles 1 lb", "precio": 1.25, "existencia": 150 }
+
+### Validación: precio negativo -> 400
+POST {{api}}/productos
+Content-Type: application/json
+
+{ "nombre": "Error", "precio": -5, "existencia": 10 }
+
+### ---------- REPARTIDORES ----------
+GET {{api}}/repartidores
+
+###
+POST {{api}}/repartidores
+Content-Type: application/json
+
+{ "nombre": "Mario Castillo", "telefono": "7888-2222", "activo": true }
+
+### ---------- PEDIDOS ----------
+### Crear pedido con detalles (el total se calcula solo)
+POST {{api}}/pedidos
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "detalles": [
+    { "productoId": 1, "cantidad": 10 },
+    { "productoId": 3, "cantidad": 2 }
+  ]
+}
+
+### Aunque envíes "total", se ignora (no existe en el DTO)
+POST {{api}}/pedidos
+Content-Type: application/json
+
+{ "clienteId": 2, "total": 99999, "detalles": [ { "productoId": 2, "cantidad": 5 } ] }
+
+### Crear pedido SIN detalles (para provocar la regla de negocio)
+POST {{api}}/pedidos
+Content-Type: application/json
+
+{ "clienteId": 3, "detalles": [] }
+
+###
+GET {{api}}/pedidos
+
+###
+GET {{api}}/pedidos/1
+
+### Actualizar pedido (reemplaza detalles y recalcula total)
+PUT {{api}}/pedidos/1
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "detalles": [
+    { "productoId": 1, "cantidad": 4 },
+    { "productoId": 5, "cantidad": 1 }
+  ]
+}
+
+### Agregar un detalle a un pedido existente
+POST {{api}}/pedidos/2/detalles
+Content-Type: application/json
+
+{ "productoId": 4, "cantidad": 3 }
+
+### ---------- ENDPOINTS ESPECIALES ----------
+GET {{api}}/pedidos/pendientes
+
+###
+GET {{api}}/pedidos/cliente/1
+
+### Despachar pedido con detalles -> 200 OK
+PUT {{api}}/pedidos/1/despachar
+
+### REGLA DE NEGOCIO: despachar pedido sin detalles -> 400
+PUT {{api}}/pedidos/3/despachar
+
+### ---------- ENTREGAS ----------
+POST {{api}}/entregas
+Content-Type: application/json
+
+{ "pedidoId": 1, "repartidorId": 1 }
+
+### Repartidor inactivo -> 400
+POST {{api}}/entregas
+Content-Type: application/json
+
+{ "pedidoId": 1, "repartidorId": 3 }
+
+###
+GET {{api}}/entregas/repartidor/1
+
+### Marcar entrega como entregada (pedido pasa a ENTREGADO)
+PUT {{api}}/entregas/1/entregar
+
+### ---------- DELETE pedido ----------
+DELETE {{api}}/pedidos/3
+
+### ---------- SERVICIO NODE ----------
+GET http://localhost:3000/resumen-pedidos
