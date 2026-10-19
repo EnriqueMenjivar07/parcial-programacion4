@@ -1,0 +1,18 @@
+# Java / Maven
+backend/target/
+*.class
+*.log
+
+# IntelliJ
+.idea/
+*.iml
+out/
+
+# Node
+node-service/node_modules/
+npm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
+.env
