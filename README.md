@@ -121,3 +121,7 @@ Variables opcionales: `PORT` (por defecto 3000) y `API_URL` (por defecto `http:/
 
 El archivo `pruebas.http` contiene todas las peticiones (CRUD, endpoints especiales y casos de error).
 Se puede ejecutar desde IntelliJ (HTTP Client) o copiar a Postman.
+
+## 5. Evidencias
+
+Capturas de las pruebas realizadas: ver [EVIDENCIAS.md](EVIDENCIAS.md).
